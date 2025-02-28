@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/loader";
 import "../App.css"
-const apiKey = "94a3fb7ccb30a0fbe7f24b818bf27bf9"; // Replace with your actual API key
+const apiKey = "94a3fb7ccb30a0fbe7f24b818bf27bf9"; 
 
 interface City {
   name: string;
@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   const [showLoader, setShowLoader] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch city suggestions based on user input
+
   useEffect(() => {
     if (city.trim() === "") {
       setCitiesList([]);
@@ -37,7 +37,7 @@ const Home: React.FC = () => {
         if (data.length === 0) {
           setCitiesList([]);
         } else {
-          // Remove duplicate cities (based on name and country)
+         
           const uniqueCities = data.filter(
             (city: City, index: number, self: City[]) =>
               index === self.findIndex((c) => c.name === city.name && c.country === city.country)
@@ -52,15 +52,15 @@ const Home: React.FC = () => {
       }
     };
 
-    const timeoutId = setTimeout(fetchCities, 500); // Delay to avoid excessive API calls
-    return () => clearTimeout(timeoutId); // Cleanup
+    const timeoutId = setTimeout(fetchCities, 500);
+    return () => clearTimeout(timeoutId); 
   }, [city]);
 
   // Handle city selection
   const handleCitySelect = (selectedCity: string) => {
-    setCity(selectedCity); // Update the input field with the full selected city name
-    setSelectedCity(selectedCity); // Set the selected city for search
-    setCitiesList([]); // Close the dropdown
+    setCity(selectedCity);
+    setSelectedCity(selectedCity); 
+    setCitiesList([]); 
   };
 
   const handleSearch = async () => {
@@ -69,14 +69,11 @@ const Home: React.FC = () => {
       setIsModalOpen(true);
       return;
     }
-
-    setError(""); // Clear previous errors
+    setError(""); 
     setShowLoader(true);
 
     try {
-      // If a city was already selected and the user clicked "Search", search for that city directly
       const searchCity = selectedCity || city;
-
       const geoRes = await fetch(
         `https://api.openweathermap.org/geo/1.0/direct?q=${searchCity}&limit=1&appid=${apiKey}`
       );
@@ -85,10 +82,9 @@ const Home: React.FC = () => {
       if (geoData.length === 0) {
         setError("City not found");
         setIsModalOpen(true);
-        setShowLoader(false); // Hide loader if city is not found
+        setShowLoader(false); 
         return;
       }
-
       const { lat, lon } = geoData[0];
       const weatherRes = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
@@ -98,16 +94,15 @@ const Home: React.FC = () => {
 
       setTimeout(() => {
         setShowLoader(false);
-        navigate(`/weather/${encodeURIComponent(searchCity)}`); // Pass the exact selected city name
-      }, 4000); // 4-second loader
+        navigate(`/weather/${encodeURIComponent(searchCity)}`);
+      }, 4000); 
     } catch (err) {
       setError("Failed to fetch weather");
       setIsModalOpen(true);
-      setShowLoader(false); // Hide loader on error
+      setShowLoader(false);
     }
   };
 
-  // Simplify dropdown visibility logic
   const shouldShowDropdown = city && !loading && citiesList.length > 0;
 
   return (
@@ -126,15 +121,13 @@ const Home: React.FC = () => {
           onChange={(e) => setCity(e.target.value)}
         />
 
-        {/* Loader */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 z-10">
             <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-blue-500 mx-auto"></div>
           </div>
         )}
 
-        {/* City Dropdown */}
-{/* City Dropdown */}
+
 {shouldShowDropdown && (
   <ul className="absolute left-0 mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-auto z-50">
     {citiesList.map((cityName, index) => (
@@ -150,8 +143,6 @@ const Home: React.FC = () => {
   </ul>
 )}
 
-
-        {/* Button */}
         <button
           className="buttonui"
           onClick={handleSearch}
@@ -159,8 +150,6 @@ const Home: React.FC = () => {
           Get Weather
         </button>
       </div>
-
-      {/* Error Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-30">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
@@ -175,8 +164,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* 4-second Loader */}
       {showLoader && <Loader />}
     </div>
   );
